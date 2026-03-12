@@ -24,7 +24,7 @@ jobs:
                     echo "Starting Deployment"
                     sudo apt-get update && sudo apt-get install docker.io docker-compose-v2 -y
                     sudo usermod -aG docker $USER
-                    rm -rf devops && mkdir devops
+                    rm -rf devops && mkdir -p devops
 
             - name: Copy to docker compose file
               uses: appleboy/scp-action@v1
@@ -44,7 +44,6 @@ jobs:
                 script: |
                     echo "Running app"
                     export DOCKERHUB_USER=${{ vars.DOCKERHUB_USER }}
-                    export DOCKER_TAG=${{ github.event.workflow_run.head_sha }}
                     export DOCKER_TAG=${{ github.sha }}
-                    echo ${{ secrets.DOCKER_TOKEN }} | docker login --username ${{ vars. DOCKERHUB_USER }} --password-stdin
+                    echo ${{ secrets.DOCKER_TOKEN }} | docker login --username ${{ vars.DOCKERHUB_USER }} --password-stdin
                     cd ~/devops && docker compose down && docker compose up -d --build --force-recreate --pull always
